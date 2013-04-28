@@ -1,4 +1,4 @@
 tpidrurw-test
 =============
 
-Testing tpidrurw register with threading
+Quick&Dirty program for testing tpidrurw register with threading
