@@ -21,6 +21,8 @@
 #include <stdio.h>
 #include <sys/types.h>
 
+static unsigned int errorcount;
+
 #ifdef __arm__
 #define __ASM_GLOBAL_FUNC(name,code) asm(".text\n\t.align 4\n\t.globl " #name "\n\t.type " #name ",2\n" #name ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc\n\t.previous");
 
@@ -59,7 +61,11 @@ static void test_thread( unsigned int *info )
     for (i=0; i<5; i++)
     {
         unsigned int r = get_tls2();
-        if (r != *info) printf("ERROR: TPIDRURW is %08x, expected %08x\n", r, *info);
+        if (r != *info)
+        {
+            printf("ERROR: TPIDRURW is %08x, expected %08x\n", r, *info);
+            errorcount++;
+        }
         sleep(1);
     }
 }
@@ -72,7 +78,11 @@ static void test_fork_thread( unsigned int info )
     for (i=0; i<5; i++)
     {
         unsigned int r = get_tls2();
-        if (r != info) printf("ERROR: TPIDRURW is %08x, expected %08x\n", r, info);
+        if (r != info)
+        {
+            printf("ERROR: TPIDRURW is %08x, expected %08x\n", r, info);
+            errorcount++;
+        }
         sleep(1);
     }
 }
@@ -101,7 +111,11 @@ int main(void)
     unsigned int t1 = 0xcafebabe, t2 = 0xdeadbeef, t3 = 0x12345678, r;
     set_tls2(0xdeadc0de);
     r = get_tls2();
-    if (r != 0xdeadc0de) printf("ERROR: TPIDRURW is %08x, expected %08x\n", r, 0xdeadc0de);
+    if (r != 0xdeadc0de)
+    {
+        printf("ERROR: TPIDRURW is %08x, expected %08x\n", r, 0xdeadc0de);
+        errorcount++;
+    }
 
     pthread_attr_init( &attr1 );
     if (pthread_create( &pthread_id1, &attr1, (void * (*)(void *))test_thread, &t1 ))
@@ -117,9 +131,15 @@ int main(void)
 
     set_tls2(0x1badbabe);
     r = get_tls2();
-    if (r != 0x1badbabe) printf("ERROR: TPIDRURW is %08x, expected %08x\n", r, 0x1badbabe);
+    if (r != 0x1badbabe)
+    {
+        printf("ERROR: TPIDRURW is %08x, expected %08x\n", r, 0x1badbabe);
+        errorcount++;
+    }
 
     sleep(10);
+
+    printf("\nYour kernel %s suitable for running Windows RT Applications with Wine!\n\n", errorcount?"IS NOT":"IS");
 
     return 0;
 }
