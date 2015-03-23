@@ -22,7 +22,7 @@
 #include <sys/types.h>
 
 #ifdef __arm__
-#define __ASM_GLOBAL_FUNC(name,code) asm(".text\n\t.align 4\n\t.globl " #name "\n\t.type " #name ",2\n" #name ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc\n\t.previous");
+#define __ASM_GLOBAL_FUNC(name,code) asm(".text\n\t.align 4\n\t.globl " #name "\n\t.type " #name ",%function\n" #name ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc\n\t.previous");
 
 extern unsigned int get_tls2( void );
 __ASM_GLOBAL_FUNC( get_tls2,
