@@ -45,7 +45,6 @@ __ASM_GLOBAL_FUNC( get_tls2,
                    "ret\n\t"
                    )
 
-/* asm ("msr tpidrro_el0, %0" : : "r" (regs->regs[0])); */
 extern void set_tls2( unsigned int );
 __ASM_GLOBAL_FUNC( set_tls2,
                    "msr	tpidr_el0, x0\n\t"
