@@ -35,6 +35,22 @@ __ASM_GLOBAL_FUNC( set_tls2,
                    "mcr	p15, 0, r0, c13, c0, 2\n\t"
                    "bx lr\n\t"
                    )
+#elif __aarch64__
+#warning This test should be compiled for ARM, ARM64 support is an experimental feature
+#define __ASM_GLOBAL_FUNC(name,code) asm(".text\n\t.align 4\n\t.globl " #name "\n\t.type " #name ",@function\n" #name ":\n\t.cfi_startproc\n\t" code "\n\t.cfi_endproc\n\t.previous");
+
+extern unsigned int get_tls2( void );
+__ASM_GLOBAL_FUNC( get_tls2,
+                   "mrs	x0, tpidr_el0\n\t"
+                   "ret\n\t"
+                   )
+
+/* asm ("msr tpidrro_el0, %0" : : "r" (regs->regs[0])); */
+extern void set_tls2( unsigned int );
+__ASM_GLOBAL_FUNC( set_tls2,
+                   "msr	tpidr_el0, x0\n\t"
+                   "ret\n\t"
+                   )
 #else
 #warning This test should be compiled for ARM
 static unsigned int x86TPIDRURW;
